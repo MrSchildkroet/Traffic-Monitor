@@ -53,6 +53,7 @@ struct Endpoint
 {
     std::string address;
     uint16_t port = 0;
+    std::string domain;
 };
 
 struct Connection

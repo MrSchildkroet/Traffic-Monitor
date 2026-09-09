@@ -1,3 +1,5 @@
+#include "./core/domain_classifier.hpp"
+
 #include <winsock2.h>
 #include <windows.h>
 
@@ -56,9 +58,9 @@ namespace
         return std::nullopt;
     }
 
-    void polling_loop(EventQueue<Connection> &queue, std::atomic<bool> &running)
+    void polling_loop(EventQueue<Connection> &queue, std::atomic<bool> &running, DnsResolver &resolver)
     {
-        SnapshotSource source;
+        SnapshotSource source(resolver);
         SnapshotDiffer differ;
 
         while (running.load())
@@ -105,6 +107,8 @@ int main(int argc, char **argv)
 
     std::cout << "[MAIN] engine ok\n";
 
+    DnsResolver resolver;
+
     EventQueue<Connection> queue;
 
     NetEventSource net_source(queue);
@@ -118,12 +122,12 @@ int main(int argc, char **argv)
     }
 
     std::atomic<bool> running{true};
-    std::thread poller(polling_loop, std::ref(queue), std::ref(running));
+    std::thread poller(polling_loop, std::ref(queue), std::ref(running), std::ref(resolver));
 
     ConsoleWriter writer(filter);
 
     std::cout
-        << "[MAIN] monitoring started. Ctrl+C to stop.\n";
+        << "[MAIN] monitoring started.\n";
 
     writer.write_header();
 

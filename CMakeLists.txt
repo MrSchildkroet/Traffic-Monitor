@@ -15,6 +15,7 @@ add_executable(
     src/core/snapshot_differ.cpp
     src/output/console_writer.cpp
     src/core/scope_classifier.cpp
+    src/core/domain_classifier.cpp
 
 )
 

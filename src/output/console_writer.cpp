@@ -125,15 +125,17 @@ namespace
 void ConsoleWriter::write_header()
 {
     std::cout << std::left
-              << std::setw(6) << "PROTO"
-              << std::setw(12) << "STATE"
-              << std::setw(24) << "LOCAL"
-              << std::setw(24) << "REMOTE"
+              << std::setw(10) << "ORIGIN"
+              << std::setw(8) << "PROTO"
+              << std::setw(14) << "STATE"
+              << std::setw(46) << "LOCAL"
+              << std::setw(46) << "REMOTE"
+              << std::setw(70) << "DOMAIN"
               << std::setw(8) << "PID"
-              << std::setw(24) << "TIMESTAMP"
+              << std::setw(12) << "TIMESTAMP"
               << "PROCESS" << "\n";
 
-    std::cout << std::string(86, '-') << "\n";
+    std::cout << std::string(300, '-') << "\n";
 }
 
 void ConsoleWriter::write_event(const Connection &conn)
@@ -143,7 +145,6 @@ void ConsoleWriter::write_event(const Connection &conn)
         return;
     }
 
-    std::cout << origin_prefix(conn) << " ";
     write_row(conn);
 }
 
@@ -155,12 +156,14 @@ void ConsoleWriter::write_row(const Connection &conn)
 
     std::cout
         << std::left
-        << std::setw(6) << protocol_label(conn.protocol)
-        << std::setw(12) << state_label(conn.state)
-        << std::setw(24) << format_endpoint(conn.local)
-        << std::setw(24) << format_endpoint(conn.remote)
+        << std::setw(10) << origin_prefix(conn)
+        << std::setw(8) << protocol_label(conn.protocol)
+        << std::setw(14) << state_label(conn.state)
+        << std::setw(46) << format_endpoint(conn.local)
+        << std::setw(46) << format_endpoint(conn.remote)
+        << std::setw(70) << conn.remote.domain
         << std::setw(8) << conn.pid
-        << std::setw(10) << timestamp_now()
+        << std::setw(12) << timestamp_now()
         << process
         << ansi::reset << "\n";
 }
@@ -172,10 +175,10 @@ void ConsoleWriter::write_snapshot(const std::vector<Connection> &connections)
     for (const Connection &conn : connections)
     {
         write_row(conn);
-
-        std::cout << "\n"
-                  << connections.size() << " connections\n";
     }
+
+    std::cout << "\n"
+              << connections.size() << " connections\n";
 }
 
 bool ConsoleWriter::passes_filter(const Connection &conn) const
@@ -214,7 +217,7 @@ void ConsoleWriter::enableVirtualTerminalProcessing()
         if (!SetConsoleMode(
                 output_handle, console_mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
         {
-            throw std::runtime_error("[CCONSOLE] Failed to enable virtual terminal proccessing");
+            throw std::runtime_error("[CONSOLE] Failed to enable virtual terminal proccessing");
         }
     }
 }

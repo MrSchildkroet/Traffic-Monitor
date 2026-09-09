@@ -30,6 +30,7 @@ namespace
             case IPPROTO_ICMP:
                 conn.protocol = Protocol::Icmp;
                 break;
+
             default:
                 conn.protocol = Protocol::Other;
                 break;
@@ -70,13 +71,13 @@ bool NetEventSource::subscribe(HANDLE engine)
 
     if (result != ERROR_SUCCESS)
     {
-        std::cerr << "[netevent] FwpmNetEventSubscribe4 failed: " << result << "\n";
+        std::cerr << "[NETEVENT] FwpmNetEventSubscribe4 failed: " << result << "\n";
         engine_ = nullptr;
 
         return false;
     }
 
-    std::cout << "[netevent] subscribed\n";
+    std::cout << "[NETEVENT] subscribed\n";
 
     return true;
 }

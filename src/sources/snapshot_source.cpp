@@ -1,4 +1,5 @@
 #include "snapshot_source.hpp"
+#include "../core/domain_classifier.hpp"
 
 #include <winsock2.h>
 #include <WS2tcpip.h>
@@ -154,6 +155,7 @@ void SnapshotSource::collect_tcp_v4(std::vector<Connection> &out)
         conn.state = map_tcp_state(row.dwState);
         conn.local = {format_v4(row.dwLocalAddr), port_from_dword(row.dwLocalPort)};
         conn.remote = {format_v4(row.dwRemoteAddr), port_from_dword(row.dwRemotePort)};
+        conn.remote.domain = resolver_.resolve_ip_address(conn.remote.address);
         conn.pid = row.dwOwningPid;
         conn.process_name = resolve_process_name(conn.pid);
 
@@ -188,6 +190,8 @@ void SnapshotSource::collect_tcp_v6(std::vector<Connection> &out)
         conn.local = {format_v6(row.ucLocalAddr), port_from_dword(row.dwLocalPort)};
         conn.remote = {format_v6(row.ucRemoteAddr),
                        port_from_dword(row.dwRemotePort)};
+
+        conn.remote.domain = resolver_.resolve_ip_address(conn.remote.address);
         conn.pid = row.dwOwningPid;
         conn.process_name = resolve_process_name(conn.pid);
 
